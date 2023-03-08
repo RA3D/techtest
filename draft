@@ -1,0 +1,92 @@
+package report;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.IntStream;
+
+public class ReportMain {
+    public static void main(String[] args) {
+        // Create some sample reports
+        Report report1 = new Report("Annually", "2022", "US", "Region 1", 1, 1);
+        Report report2 = new Report("Quarterly", "Q4 2021", "US", "Region 2", 2, 1);
+        Report report3 = new Report("Quarterly", "Q2 2021", "US", "Region 3", 3, 1);
+        Report report4 = new Report("Annually", "2023", "US", "Region 4", 1, 2);
+        Report report5 = new Report("Quarterly", "Q1 2021", "US", "Region 5", 2, 2);
+        Report report13 = new Report("Quarterly", "Q3 2021", "US", "Region 5", 2, 2);
+        Report report6 = new Report("Annually", "2021", "US", "Region 6", 3, 2);
+        Report report7 = new Report("Quarterly", "Q1 2023", "UK", "Region 7", 1, 1);
+        Report report8 = new Report("Quarterly", "Q2 2023", "UK", "Region 8", 2, 1);
+        Report report9 = new Report("Quarterly", "Q3 2023", "UK", "Region 9", 3, 1);
+        Report report10 = new Report("Quarterly", "Q4 2023", "UK", "Region 10", 1, 2);
+        Report report11 = new Report("Quarterly", "Q1 2022", "UK", "Region 11", 2, 2);
+        Report report12 = new Report("Quarterly", "Q2 2022", "UK", "Region 12", 3, 2);
+        Report report14 = new Report("Annually", "2021", "UK", "Region 1", 1, 1);
+        Report report15 = new Report("Annually", "2022", "UK", "Region 1", 1, 1);
+        Report report16 = new Report("Annually", "2023", "UK", "Region 1", 1, 1);
+
+        // Create a list of reports
+        List<Report> reports = new ArrayList<>(List.of(report1, report2, report3, report4, report5, report6, report7, report8, report9, report10, report11, report12, report13, report14, report15, report16));
+
+        // Sort the reports
+        reports.sort(Comparator.comparing(Report::getCountry)
+                .thenComparing(Comparator.comparing(Report::getFrequency)
+                        .thenComparing((r1, r2) -> {
+                            if (r1.getFrequency().equals("Annually")) {
+                                return r1.getPeriod().compareTo(r2.getPeriod());
+                            } else {
+                                // Quarterly format: "Q1 2023" order by year then quarter
+                                int r1Year = Integer.parseInt(r1.getPeriod().substring(3));
+                                int r2Year = Integer.parseInt(r2.getPeriod().substring(3));
+                                int r1Quarter = getQuarterNumber(r1.getPeriod().substring(0, 2));
+                                int r2Quarter = getQuarterNumber(r2.getPeriod().substring(0, 2));
+                                if (r1Year != r2Year) {
+                                    return Integer.compare(r1Year, r2Year);
+                                } else if (r1Quarter != r2Quarter) {
+                                    return Integer.compare(r1Quarter, r2Quarter);
+                                } else {
+                                    return r1.getPeriod().compareTo(r2.getPeriod());
+                                }
+                            }
+                        }).thenComparing(Report::getRegion)));
+
+        // Set the xPos and yPos for each report based on the order in the reports list
+        int xPos = 1;
+        int yPos = 0;
+        String currentCountry = null;
+
+        for (Report report : reports) {
+            if (!report.getCountry().equals(currentCountry)) {
+                currentCountry = report.getCountry();
+                xPos = 1;
+                yPos++;
+            }
+
+            report.setXPos(xPos);
+            report.setYPos(yPos);
+
+            // Increment the xPos for the next report
+            xPos++;
+
+        }
+
+        // Print the sorted reports
+        reports.forEach(System.out::println);
+    }
+
+    private static int getQuarterNumber(String quarter) {
+        switch (quarter) {
+            case "Q1":
+                return 1;
+            case "Q2":
+                return 2;
+            case "Q3":
+                return 3;
+            case "Q4":
+                return 4;
+            default:
+                throw new IllegalArgumentException("Invalid quarter: " + quarter);
+        }
+    }
+}
+
