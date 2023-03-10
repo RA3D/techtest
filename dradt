@@ -1,0 +1,22 @@
+private Map<GcActionType, List<Metadata>> filterActions(Map<GcActionType, List<Metadata>> actions, String actionType, String channel) {
+    if (actions.isEmpty() || (isEmpty(actionType) && isEmpty(channel))) {
+        return new HashMap<>();
+    }
+    Map<GcActionType, List<Metadata>> newActions = new HashMap<>();
+    for (Entry<GcActionType, List<Metadata>> entry : actions.entrySet()) {
+        List<Metadata> metas = isEmpty(channel)
+                ? entry.getValue()
+                : entry.getValue().stream()
+                        .filter(a -> a.getChannel().equals(channel))
+                        .collect(Collectors.toList());
+        if (isNotEmpty(actionType)) {
+            metas = metas.stream()
+                    .filter(a -> a.getActionType().equals(actionType))
+                    .collect(Collectors.toList());
+        }
+        if (!metas.isEmpty()) {
+            newActions.put(entry.getKey(), metas);
+        }
+    }
+    return newActions;
+}
