@@ -1,0 +1,25 @@
+public static void sortByCountryOrRegion(List<Report> reports, Map<String, List<String>> regionCountryMap) {
+    reports.sort((r1, r2) -> {
+        String country1 = isNotEmpty(r1.getCountry()) ? r1.getCountry() : "";
+        String country2 = isNotEmpty(r2.getCountry()) ? r2.getCountry() : "";
+        String region1 = isNotEmpty(r1.getRegion()) ? r1.getRegion() : "";
+        String region2 = isNotEmpty(r2.getRegion()) ? r2.getRegion() : "";
+
+        if (isNotEmpty(country1) && isNotEmpty(country2)) {
+            if (regionCountryMap.containsKey(region1) && regionCountryMap.get(region1).contains(country2)) {
+                return region1.compareTo(country2);
+            } else if (regionCountryMap.containsKey(region2) && regionCountryMap.get(region2).contains(country1)) {
+                return country1.compareTo(region2);
+            } else {
+                return country1.compareTo(country2);
+            }
+        } else {
+            return region1.compareTo(region2);
+        }
+    });
+}
+
+// Helper method to check if a string is not null or empty
+public static boolean isNotEmpty(String str) {
+    return str != null && !str.isEmpty();
+}
