@@ -1,0 +1,9 @@
+Map<String, List<Report>> countryMap = reports.stream()
+                .collect(Collectors.groupingBy(r -> {
+                    String country = r.getCountry() != null ? r.getCountry() : "";
+                    String region = r.getRegion() != null ? r.getRegion() : "";
+                    return country.isEmpty() ? region : country;
+                }));
+        List<String> sortedCountries = new ArrayList<>(countryMap.keySet());
+
+        Collections.sort(sortedCountries);
